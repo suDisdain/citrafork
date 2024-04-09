@@ -132,16 +132,16 @@ std::string GetReadableVersion(u32 version) {
 } // Anonymous namespace
 
 Instance::Instance(bool enable_validation, bool dump_command_buffers)
-    : library{OpenLibrary()},
-      instance{CreateInstance(*library, Frontend::WindowSystemType::Headless, enable_validation,
-                              dump_command_buffers)},
+    : library{OpenLibrary()}, instance{CreateInstance(*library,
+                                                      Frontend::WindowSystemType::Headless,
+                                                      enable_validation, dump_command_buffers)},
       physical_devices{instance->enumeratePhysicalDevices()} {}
 
 Instance::Instance(Frontend::EmuWindow& window, u32 physical_device_index)
-    : library{OpenLibrary(&window)},
-      instance{CreateInstance(*library, window.GetWindowInfo().type,
-                              Settings::values.renderer_debug.GetValue(),
-                              Settings::values.dump_command_buffers.GetValue())},
+    : library{OpenLibrary(&window)}, instance{CreateInstance(
+                                         *library, window.GetWindowInfo().type,
+                                         Settings::values.renderer_debug.GetValue(),
+                                         Settings::values.dump_command_buffers.GetValue())},
       debug_callback{CreateDebugCallback(*instance, debug_utils_supported)},
       physical_devices{instance->enumeratePhysicalDevices()} {
     const std::size_t num_physical_devices = static_cast<u16>(physical_devices.size());
@@ -406,15 +406,9 @@ bool Instance::CreateDevice() {
         vk::PhysicalDevicePipelineCreationCacheControlFeaturesEXT,
         vk::PhysicalDeviceFragmentShaderBarycentricFeaturesKHR>();
     const vk::StructureChain properties_chain =
-        physical_device
-            .getProperties2<vk::PhysicalDeviceProperties2, vk::PhysicalDeviceDriverProperties,
-                            vk::PhysicalDevicePortabilitySubsetPropertiesKHR,
-                            vk::PhysicalDeviceExternalMemoryHostPropertiesEXT>();
-    const vk::PhysicalDeviceDriverProperties driver =
-        properties_chain.get<vk::PhysicalDeviceDriverProperties>();
-
-    driver_id = driver.driverID;
-    vendor_name = driver.driverName.data();
+        physical_device.getProperties2<vk::PhysicalDeviceProperties2,
+                                       vk::PhysicalDevicePortabilitySubsetPropertiesKHR,
+                                       vk::PhysicalDeviceExternalMemoryHostPropertiesEXT>();
 
     features = feature_chain.get().features;
     if (available_extensions.empty()) {
