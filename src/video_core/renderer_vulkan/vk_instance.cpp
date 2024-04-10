@@ -416,6 +416,7 @@ bool Instance::CreateDevice() {
     driver_id = driver.driverID;
     vendor_name = driver.driverName.data();
 
+
     features = feature_chain.get().features;
     if (available_extensions.empty()) {
         LOG_CRITICAL(Render_Vulkan, "No extensions supported by device.");
